@@ -1,0 +1,73 @@
+#
+# Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
+#
+
+[worldserver]
+
+########################################
+# Character Services Mod Configuration
+########################################
+#
+#    CharacterServices.Enable
+#        Description: Enable the character services module
+#        Default:     1 - Enabled
+#                     0 - Disabled
+#
+#    CharacterServices.NameChange.Enable
+#        Description: Enable the name change service
+#        Default:     1 - Enabled
+#                     0 - Disabled
+#
+#    CharacterServices.AppearanceChange.Enable
+#        Description: Enable the appearance change service
+#        Default:     1 - Enabled
+#                     0 - Disabled
+#
+#    CharacterServices.RaceChange.Enable
+#        Description: Enable the race change service
+#        Default:     1 - Enabled
+#                     0 - Disabled
+#
+#    CharacterServices.FactionChange.Enable
+#        Description: Enable the faction change service
+#        Default:     1 - Enabled
+#                     0 - Disabled
+#
+
+CharacterServices.Enable = 1
+
+CharacterServices.NameChange.Enable = 1
+CharacterServices.AppearanceChange.Enable = 1
+CharacterServices.RaceChange.Enable = 1
+CharacterServices.FactionChange.Enable = 1
+
+#
+#    CharacterServices.DynamicCost.Enable
+#        Description: Enables scaling cost for services based on the players level (player level / 80) * cost
+#        Default:     1 - Enabled
+#                     0 - Disabled
+#
+#    CharacterServices.Cost.NameChange
+#        Description: The cost to change buy a name change in gold
+#        Default:     25
+#
+#    CharacterServices.Cost.AppearanceChange
+#        Description: The cost to change buy a appearance change in gold
+#        Default:     50
+#
+#    CharacterServices.Cost.RaceChange
+#        Description: The cost to change buy a race change in gold
+#        Default:     100
+#
+#    CharacterServices.Cost.FactionChange
+#        Description: The cost to change buy a faction change in gold
+#        Default:     250
+#
+
+CharacterServices.DynamicCost.Enable = 1
+
+CharacterServices.Cost.NameChange = 25
+CharacterServices.Cost.AppearanceChange = 50
+CharacterServices.Cost.RaceChange = 100
+CharacterServices.Cost.FactionChange = 250
+
