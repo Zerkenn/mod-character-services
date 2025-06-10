@@ -55,19 +55,19 @@ class CharacterServices : public CreatureScript
       {
           case 1:
             player->SetAtLoginFlag(AT_LOGIN_RENAME);
-            ChatHandler(player->GetSession()).PSendSysMessage("{} flagged for name change at the charcter screen. Please log out.", player->GetPlayerName());
+            ChatHandler(player->GetSession()).PSendSysMessage("{} flagged for name change at the character screen. Please log out.", player->GetPlayerName());
             break;
           case 2:
             player->SetAtLoginFlag(AT_LOGIN_CUSTOMIZE);
-            ChatHandler(player->GetSession()).PSendSysMessage("{} flagged for appearance change at the charcter screen. Please log out.", player->GetPlayerName());
+            ChatHandler(player->GetSession()).PSendSysMessage("{} flagged for appearance change at the character screen. Please log out.", player->GetPlayerName());
             break;
           case 3:
             player->SetAtLoginFlag(AT_LOGIN_CHANGE_RACE);
-            ChatHandler(player->GetSession()).PSendSysMessage("{} flagged for race change at the charcter screen. Please log out.", player->GetPlayerName());
+            ChatHandler(player->GetSession()).PSendSysMessage("{} flagged for race change at the character screen. Please log out.", player->GetPlayerName());
             break;
           case 4:
             player->SetAtLoginFlag(AT_LOGIN_CHANGE_FACTION);
-            ChatHandler(player->GetSession()).PSendSysMessage("{} flagged for faction change at the charcter screen. Please log out.", player->GetPlayerName());
+            ChatHandler(player->GetSession()).PSendSysMessage("{} flagged for faction change at the character screen. Please log out.", player->GetPlayerName());
             break;
       }
       CloseGossipMenuFor(player);
