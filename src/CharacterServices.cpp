@@ -10,6 +10,12 @@
 
 class CharacterServices : public CreatureScript
 {
+  private:
+    static constexpr uint32 ACTION_NAME_CHANGE = GOSSIP_ACTION_INFO_DEF + 1;
+    static constexpr uint32 ACTION_APPEARANCE_CHANGE = GOSSIP_ACTION_INFO_DEF + 2;
+    static constexpr uint32 ACTION_RACE_CHANGE = GOSSIP_ACTION_INFO_DEF + 3;
+    static constexpr uint32 ACTION_FACTION_CHANGE = GOSSIP_ACTION_INFO_DEF + 4;
+
   public:
     CharacterServices() : CreatureScript("character_services") { }
 
@@ -26,13 +32,13 @@ class CharacterServices : public CreatureScript
       }
 
       if (sConfigMgr->GetOption<bool>("CharacterServices.NameChange.Enable", false))
-        AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface/Icons/inv_misc_note_02:50:50|tChange My Name", GOSSIP_SENDER_MAIN, 1, "Confirm Name Change.", GetServiceCost(player, 1), false);
+        AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface/Icons/inv_misc_note_02:50:50|tChange My Name", GOSSIP_SENDER_MAIN, ACTION_NAME_CHANGE, "Confirm Name Change.", GetServiceCost(player, ACTION_NAME_CHANGE), false);
       if (sConfigMgr->GetOption<bool>("CharacterServices.AppearanceChange.Enable", false))
-        AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface/Icons/ability_rogue_disguise:50:50|tChange My Appearance", GOSSIP_SENDER_MAIN, 2, "Confirm Appearance Change.", GetServiceCost(player, 2), false);
+        AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface/Icons/ability_rogue_disguise:50:50|tChange My Appearance", GOSSIP_SENDER_MAIN, ACTION_APPEARANCE_CHANGE, "Confirm Appearance Change.", GetServiceCost(player, ACTION_APPEARANCE_CHANGE), false);
       if (sConfigMgr->GetOption<bool>("CharacterServices.RaceChange.Enable", false))
-        AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface/Icons/inv_misc_grouplooking:50:50|tChange My Race", GOSSIP_SENDER_MAIN, 3, "Confirm Race Change.", GetServiceCost(player, 3), false);
+        AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface/Icons/inv_misc_grouplooking:50:50|tChange My Race", GOSSIP_SENDER_MAIN, ACTION_RACE_CHANGE, "Confirm Race Change.", GetServiceCost(player, ACTION_RACE_CHANGE), false);
       if (sConfigMgr->GetOption<bool>("CharacterServices.FactionChange.Enable", false))
-        AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface/Icons/inv_bannerpvp_03:50:50|tChange My Faction", GOSSIP_SENDER_MAIN, 4, "Confirm Faction Change.", GetServiceCost(player, 4), false);
+        AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface/Icons/inv_bannerpvp_03:50:50|tChange My Faction", GOSSIP_SENDER_MAIN, ACTION_FACTION_CHANGE, "Confirm Faction Change.", GetServiceCost(player, ACTION_FACTION_CHANGE), false);
 
       SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
 
@@ -42,7 +48,19 @@ class CharacterServices : public CreatureScript
     bool OnGossipSelect(Player* player, Creature* /*creature*/, uint32 /*sender*/, uint32 action) override
     {
       ClearGossipMenuFor(player);
-      if (!player->HasEnoughMoney(GetServiceCost(player, 4)))
+
+      switch (action) {
+      case ACTION_NAME_CHANGE:
+      case ACTION_APPEARANCE_CHANGE:
+      case ACTION_RACE_CHANGE:
+      case ACTION_FACTION_CHANGE:
+        break;
+      default:
+        ChatHandler(player->GetSession()).PSendSysMessage("Invalid action chosen!");
+        return false;
+      }
+
+      if (!player->HasEnoughMoney(GetServiceCost(player, action)))
         {
           ChatHandler(player->GetSession()).PSendSysMessage("You do not have enough money for this service.");
           CloseGossipMenuFor(player);
@@ -53,57 +71,59 @@ class CharacterServices : public CreatureScript
 
       switch (action)
       {
-          case 1:
+          case ACTION_NAME_CHANGE:
             player->SetAtLoginFlag(AT_LOGIN_RENAME);
             ChatHandler(player->GetSession()).PSendSysMessage("{} flagged for name change at the character screen. Please log out.", player->GetPlayerName());
             break;
-          case 2:
+          case ACTION_APPEARANCE_CHANGE:
             player->SetAtLoginFlag(AT_LOGIN_CUSTOMIZE);
             ChatHandler(player->GetSession()).PSendSysMessage("{} flagged for appearance change at the character screen. Please log out.", player->GetPlayerName());
             break;
-          case 3:
+          case ACTION_RACE_CHANGE:
             player->SetAtLoginFlag(AT_LOGIN_CHANGE_RACE);
             ChatHandler(player->GetSession()).PSendSysMessage("{} flagged for race change at the character screen. Please log out.", player->GetPlayerName());
             break;
-          case 4:
+          case ACTION_FACTION_CHANGE:
             player->SetAtLoginFlag(AT_LOGIN_CHANGE_FACTION);
             ChatHandler(player->GetSession()).PSendSysMessage("{} flagged for faction change at the character screen. Please log out.", player->GetPlayerName());
             break;
+          default:
+            __builtin_unreachable();
       }
       CloseGossipMenuFor(player);
 
       return true;
     }
 
-    uint32 GetServiceCost(Player* player, uint8 service)
+    uint32 GetServiceCost(Player* player, uint32 service)
     {
        bool dynamicCostEnabled = sConfigMgr->GetOption<bool>("CharacterServices.DynamicCost.Enable", false);
        double playerLevel = player->GetLevel();
        double dynamicRatio = (playerLevel / 80);
        switch (service)
        {
-         case 1:
+         case ACTION_NAME_CHANGE:
            {
-             uint32 renameCost = sConfigMgr->GetOption<uint32>("CharacterServices.Cost.NameChange", 25) * 10000;
-             return dynamicCostEnabled ? dynamicRatio * renameCost : renameCost;
+             uint32 cost = sConfigMgr->GetOption<uint32>("CharacterServices.Cost.NameChange", 25) * 10000;
+             return dynamicCostEnabled ? dynamicRatio * cost : cost;
            }
-         case 2:
+         case ACTION_APPEARANCE_CHANGE:
            {
-             uint32 renameCost = sConfigMgr->GetOption<uint32>("CharacterServices.Cost.AppearanceChange", 50) * 10000;
-             return dynamicCostEnabled ? dynamicRatio * renameCost : renameCost;
+             uint32 cost = sConfigMgr->GetOption<uint32>("CharacterServices.Cost.AppearanceChange", 50) * 10000;
+             return dynamicCostEnabled ? dynamicRatio * cost : cost;
            }
-         case 3:
+         case ACTION_RACE_CHANGE:
            {
-             uint32 renameCost = sConfigMgr->GetOption<uint32>("CharacterServices.Cost.RaceChange", 100) * 10000;
-             return dynamicCostEnabled ? dynamicRatio * renameCost : renameCost;
+             uint32 cost = sConfigMgr->GetOption<uint32>("CharacterServices.Cost.RaceChange", 100) * 10000;
+             return dynamicCostEnabled ? dynamicRatio * cost : cost;
            }
-         case 4:
+         case ACTION_FACTION_CHANGE:
            {
-             uint32 renameCost = sConfigMgr->GetOption<uint32>("CharacterServices.Cost.FactionChange", 250) * 10000;
-             return dynamicCostEnabled ? dynamicRatio * renameCost : renameCost;
+             uint32 cost = sConfigMgr->GetOption<uint32>("CharacterServices.Cost.FactionChange", 250) * 10000;
+             return dynamicCostEnabled ? dynamicRatio * cost : cost;
            }
          default:
-           return 250;
+           __builtin_unreachable();
        }
     }
 };
